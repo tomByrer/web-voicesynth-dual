@@ -1,18 +1,21 @@
-var synth = window.speechSynthesis;
+const synth = window.speechSynthesis;
 
-var inputForm = document.querySelector('form');
-var inputTxt = document.querySelector('.txt');
-var voiceSelect = document.querySelector('select');
+const inputForm = document.querySelector('form')
+const inputTxt = document.querySelector('.txt')
 
-var pitch = document.querySelector('#pitch');
-var pitchValue = document.querySelector('.pitch-value');
-var rate = document.querySelector('#rate');
-var rateValue = document.querySelector('.rate-value')
+
+const $AvoiceSelect = document.getElementById('Aselect');
+const $Apitch = document.getElementById('Apitch')
+const $ApitchValue = document.getElementById('.ApitchValue')
+const $Arate = document.getElementById('Arate')
+const $ArateValue = document.getElementById('ArateValue')
+const $Aplay = document.getElementById('Aplay')
 
 const $local = document.getElementById('local')
 const $log = document.getElementById('log')
 
-var voices = [];
+
+let voices = [];
 
 function populateVoiceList() {
   voices = synth.getVoices().sort(function (a, b) {
@@ -20,11 +23,12 @@ function populateVoiceList() {
       if ( aname < bname ) return -1;
       else if ( aname == bname ) return 0;
       else return +1;
-  });
+  })
 
 
-  var selectedIndex = voiceSelect.selectedIndex < 0 ? 0 : voiceSelect.selectedIndex;
-  voiceSelect.innerHTML = '';
+  let selectedIndex = $AvoiceSelect.selectedIndex < 0 ? 0 : $AvoiceSelect.selectedIndex;
+  $AvoiceSelect.innerHTML = '';
+  $AvoiceSelect.innerHTML = '';
 
   let words = ""
   for( i=0; i<voices.length; i++ ){
@@ -44,10 +48,10 @@ function populateVoiceList() {
       }
       option.setAttribute('data-lang', voices[i].lang)
       option.setAttribute('data-name', voices[i].name)
-      voiceSelect.appendChild(option)
+      $AvoiceSelect.appendChild(option)
     }
   }
-  voiceSelect.selectedIndex = selectedIndex
+  $AvoiceSelect.selectedIndex = selectedIndex
 }
 
 populateVoiceList();
@@ -55,49 +59,53 @@ if (speechSynthesis.onvoiceschanged !== undefined) {
   speechSynthesis.onvoiceschanged = populateVoiceList;
 }
 
-function speak(){
+$Aplay.onclick = function(){ speak( "A" ) }
+$Bplay.onclick = function(){ speak( "B" ) }
+function speak( voicePackLetter ){
     if (synth.speaking) {
         logit('Err: speechSynthesis.speaking');
         return;
     }
     if (inputTxt.value !== '') {
-    var utterThis = new SpeechSynthesisUtterance(inputTxt.value);
+    let utterThis = new SpeechSynthesisUtterance(inputTxt.value) //there is no queueing
     utterThis.onend = function (event) {
         logit('SpeechSynthesisUtterance.onend');
     }
     utterThis.onerror = function (event) {
         logit('Err: SpeechSynthesisUtterance.onerror');
     }
-    var selectedOption = voiceSelect.selectedOptions[0].getAttribute('data-name');
+    var selectedOption = $AvoiceSelect.selectedOptions[0].getAttribute('data-name');
     for(i = 0; i < voices.length ; i++) {
       if(voices[i].name === selectedOption) {
         utterThis.voice = voices[i];
         break;
       }
     }
-    utterThis.pitch = pitch.value;
-    utterThis.rate = rate.value;
+    if ( voicePackLetter === "A" ){
+      utterThis.pitch = $Apitch.value
+      utterThis.rate = $Arate.value
+    } else {
+      utterThis.pitch = $Bpitch.value;
+      utterThis.rate = $Brate.value;
+    }
     synth.speak(utterThis);
   }
 }
 
-inputForm.onsubmit = function(event) {
-  event.preventDefault();
+// inputForm.onsubmit = function(event) {
+//   event.preventDefault();
+//   speak();
+//   inputTxt.blur();
+// }
 
-  speak();
-
-  inputTxt.blur();
+$Apitch.onchange = function() {
+  $ApitchValue.textContent = $Apitch.value;
+}
+$Arate.onchange = function() {
+  $ArateValue.textContent = $Arate.value;
 }
 
-pitch.onchange = function() {
-  pitchValue.textContent = pitch.value;
-}
-
-rate.onchange = function() {
-  rateValue.textContent = rate.value;
-}
-
-voiceSelect.onchange = function(){
+$AvoiceSelect.onchange = function(){
   speak();
 }
 

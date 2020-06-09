@@ -59,7 +59,7 @@ label {
   line-height: 1.5;
 }
 
-#rate, #pitch {
+.slider {
   float: right;
   width: 81%;
 }
@@ -71,4 +71,13 @@ label {
 
 .controls button {
   padding: 10px;
+}
+
+select {
+  align-items: center;
+  margin-left: 4em;
+}
+
+input[type=text]  {
+  margin: 0 !important;
 }
